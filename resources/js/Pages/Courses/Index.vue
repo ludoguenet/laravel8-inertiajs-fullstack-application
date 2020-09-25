@@ -5,8 +5,11 @@
         </template>
         <section class="py-6">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div v-if="$page.flash.success" class="bg-green-200 text-green-600 p-4">
+                {{ $page.flash.success }}
+            </div>
                 <div class="py-3" v-for="course in courses" v-bind:key="course.id">
-                    <div class="mx-8 bg-white rounded shadow p-4">
+                    <div class="bg-white rounded shadow p-4">
                         <div class="text-sm text-gray-500 flex justify-between items-center">
                         <div>
                             Mise en ligne par <strong>{{ course.user.name }}</strong> (<span class="text-gray-500 text-sm">{{ course.participants }} participant<span v-if="parseInt(course.participants) > 1 ">s</span>)
