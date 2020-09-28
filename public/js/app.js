@@ -26031,7 +26031,12 @@ var render = function() {
                       _c(
                         "span",
                         { staticClass: "block text-sm text-gray-400" },
-                        [_vm._v(_vm._s(course.episodes_count) + " épisodes")]
+                        [
+                          _vm._v(_vm._s(course.episodes_count) + " épisode"),
+                          course.episodes_count > 1
+                            ? _c("span", [_vm._v("s")])
+                            : _vm._e()
+                        ]
                       )
                     ]
                   ),
