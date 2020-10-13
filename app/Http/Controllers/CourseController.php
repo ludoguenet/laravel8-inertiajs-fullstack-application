@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Inertia\Inertia;
 use App\Models\Course;
 use App\Models\Episode;
 use Illuminate\Http\Request;
+use App\Youtube\YoutubeServices;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Database\Eloquent\Builder;
+use App\Http\Requests\StoreCourseWithEpisodes;
 
 class CourseController extends Controller
 {
@@ -20,6 +25,11 @@ class CourseController extends Controller
             INNER JOIN episodes ON completions.episode_id = episodes.id
             WHERE episodes.course_id = courses.id
             ) AS participants'
+        ))->addSelect(DB::raw(
+            '(SELECT SUM(duration)
+            FROM episodes
+            WHERE episodes.course_id = courses.id
+            ) AS total_duration'
         ))
         ->withCount('episodes')->latest()->get();
 
@@ -39,26 +49,43 @@ class CourseController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreCourseWithEpisodes $request, YoutubeServices $ytb)
     {
-        $request->validate([
-            'title' => ['required', 'max:255'],
-            'description' => ['required', 'max:255'],
-            'episodes' => ['required', 'array', 'min:1', 'max:15'],
-            'episodes.*.title' => ['required'],
-            'episodes.*.description' => ['required'],
-            'episodes.*.video_url' => ['required']
-        ]);
-
         $course = Course::create($request->all());
 
         foreach($request->input('episodes') as $episode)
         {
             $episode['course_id'] = $course->id;
+            $episode['duration'] = $ytb->handleYoutubeVideoDuration($episode['video_url']);
             Episode::create($episode);
         }
 
         return Redirect::route('courses.index')->with('success', 'Félicitations, votre formation a bien été postée.');
+    }
+
+    public function edit(int $id)
+    {
+        $course = Course::where('id', $id)->with('episodes')->first();
+        $this->authorize('update', $course);
+
+        return Inertia::render('Courses/Edit', [
+            'course' => $course
+        ]);
+    }
+
+    public function update(StoreCourseWithEpisodes $request)
+    {
+        $course = Course::where('id', $request->id)->first();
+        $this->authorize('update', $course);
+        $course->update($request->all());
+        $course->episodes()->delete();
+
+        foreach($request->episodes as $episode) {
+            $episode['course_id'] = $course->id;
+            Episode::create($episode);
+        }
+
+        return Redirect::route('courses.index')->with('success', 'Félicitations, votre formation a bien été modifiée.');
     }
 
     public function toggleProgress(Request $request)

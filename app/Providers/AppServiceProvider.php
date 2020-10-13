@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Inertia\Inertia;
+use App\Youtube\YoutubeServices;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\ServiceProvider;
 
@@ -38,5 +39,9 @@ class AppServiceProvider extends ServiceProvider
                     : (object) [];
             },
         ]);
+
+        $this->app->singleton('App\Youtube\YoutubeServices', function () {
+            return new YoutubeServices(env('YOUTUBE_API_KEY'));
+        });
     }
 }

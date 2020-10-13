@@ -18,8 +18,13 @@
                         <span class="block text-sm text-gray-400">{{ course.episodes_count }} épisode<span v-if="course.episodes_count > 1">s</span></span>
                         </div>
                         <h1 class="text-3xl">{{ course.title }}</h1>
+                        <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700">
+                            {{ convert(course.total_duration) }}</span>
                         <div class="text-sm text-gray-500 mt-2">{{ course.description }}</div>
-                        <a :href="'course/' + course.id" class="bg-indigo-700 text-white px-3 py-2 text-sm mt-3 inline-block rounded hover:bg-indigo-500">Voir la formation</a>
+                        <div class="flex justify-between items-center">
+                            <a :href="'course/' + course.id" class="bg-indigo-700 text-white px-3 py-2 text-sm mt-3 inline-block rounded hover:bg-indigo-500">Voir la formation</a>
+                            <a :href="'courses/edit/' + course.id" v-if="course.update" class="bg-gray-700 text-white px-3 py-2 text-sm mt-3 inline-block rounded hover:bg-gray-500">Editer</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -36,6 +41,16 @@ export default {
         AppLayout
     },
 
-    props: ['courses']
+    props: ['courses'],
+
+    methods: {
+        convert(timestamps) {
+            let hours = Math.floor(timestamps / 3600);
+            let minutes = Math.floor(timestamps / 60) - (hours * 60);
+            let seconds = timestamps % 60;
+
+            return hours.toString().padStart(2, 0) + ':' + minutes.toString().padStart(2, 0) + ':' + seconds.toString().padStart(2, 0);
+        }
+    }
 }
 </script>
