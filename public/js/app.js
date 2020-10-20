@@ -3318,6 +3318,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
@@ -26520,7 +26523,7 @@ var render = function() {
                 ])
               : _vm._e(),
             _vm._v(" "),
-            _vm._l(_vm.courses, function(course) {
+            _vm._l(_vm.courses.data, function(course) {
               return _c("div", { key: course.id, staticClass: "py-3" }, [
                 _c("div", { staticClass: "bg-white rounded shadow p-4" }, [
                   _c(
@@ -26607,6 +26610,22 @@ var render = function() {
                   )
                 ])
               ])
+            }),
+            _vm._v(" "),
+            _vm._l(_vm.courses.links, function(link) {
+              return _c(
+                "inertia-link",
+                {
+                  key: link.label,
+                  staticClass: "text-indigo-700 border-gray-500 p-5",
+                  attrs: { href: link.url }
+                },
+                [
+                  _c("span", { class: { "text-red-700": link.active } }, [
+                    _vm._v(_vm._s(link.label))
+                  ])
+                ]
+              )
             })
           ],
           2

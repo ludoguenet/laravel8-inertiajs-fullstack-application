@@ -8,7 +8,7 @@
             <div v-if="$page.flash.success" class="bg-green-200 text-green-600 p-4">
                 {{ $page.flash.success }}
             </div>
-                <div class="py-3" v-for="course in courses" v-bind:key="course.id">
+                <div class="py-3" v-for="course in courses.data" v-bind:key="course.id">
                     <div class="bg-white rounded shadow p-4">
                         <div class="text-sm text-gray-500 flex justify-between items-center">
                         <div>
@@ -27,6 +27,9 @@
                         </div>
                     </div>
                 </div>
+                <inertia-link :href="link.url" class="text-indigo-700 border-gray-500 p-5" v-for="link in courses.links" v-bind:key="link.label">
+                    <span v-bind:class="{'text-red-700' : link.active}">{{ link.label }}</span>
+                </inertia-link>
             </div>
         </section>
     </app-layout>
